@@ -1,0 +1,9 @@
+# IDE configuration
+/.idea/
+
+# Dependencies
+node_modules/
+
+# Generated files
+/coverage/
+/dist/
