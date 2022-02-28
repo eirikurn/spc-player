@@ -64,6 +64,13 @@ export class Cpu {
       /**
        * 8-bit Data Transmission (Read)
        */
+      // MOV A <- imm
+      case 0xe8: {
+        const imm = this.ram[this.pc++];
+        this.nz = this.a = imm;
+        break;
+      }
+
       // MOV A <- (dp)
       case 0xe4: {
         const dp = this.ram[this.pc++] + this.p;
@@ -76,6 +83,24 @@ export class Cpu {
       case 0xcd: {
         const imm = this.ram[this.pc++];
         this.nz = this.x = imm;
+        break;
+      }
+
+      // MOV Y <- imm
+      case 0x8d: {
+        const imm = this.ram[this.pc++];
+        this.nz = this.y = imm;
+        break;
+      }
+
+      /**
+       * 8-bit Data Transmission (Write)
+       */
+      // MOV A -> (dp)
+      case 0xc4: {
+        const dp = this.ram[this.pc++] + this.p;
+        this.ram[dp] = this.a;
+        // TODO: WRITE side-effect?
         break;
       }
 
@@ -94,6 +119,14 @@ export class Cpu {
       /**
        * 8-bit Logical Operations
        */
+      // AND A &= (dp)
+      case 0x24: {
+        const dp = this.ram[this.pc++] + this.p;
+        this.nz = this.a &= this.ram[dp];
+        // TODO: READ side-effect?
+        break;
+      }
+
       // EOR A ^= imm
       case 0x48: {
         const imm = this.ram[this.pc++];
