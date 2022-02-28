@@ -17,8 +17,6 @@ So why am I writing this from scratch?
 * I like the challenge of writing a "console" emulator from scratch.
 * I have some ideas for interactive UI which would not be possible with the existing emulators.
 
-[Reference](https://wiki.superfamicom.org/spc700-reference)
-
 ## Status
 
 ### Core
@@ -29,6 +27,8 @@ So why am I writing this from scratch?
 - [ ] Emulate timers.
 - [ ] Emulate DSP.
 - [ ] Emulate echo buffer.
+
+[Reference](https://wiki.superfamicom.org/spc700-reference)
 
 ### Extra
 
