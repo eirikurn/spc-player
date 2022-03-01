@@ -5,9 +5,9 @@
  *
  * - - - - - - - - - - - - - - - - 0
  * - - - - - - - - - - - - - - - - 1
- * - - - - r - - - - - - - - - - - 2
+ * - - - - r - - - - - - - - - - X 2
  * - - - - - - - - - - - - - - - - 3
- * - - - - - - - - X - - - - - - - 4
+ * - - - - - - - - X - - w - - - - 4
  * - - - - - - - - - - - - - - - - 5
  * - - - - - - - - - - - - - - - - 6
  * - - - - - - - - - - - - - - - - 7
@@ -17,8 +17,8 @@
  * - - - - - - - - - - - - - - - - B
  * - - - - w - - - - - - - X - - - C
  * - - - - - - - - - - - - - - - - D
- * - - - - r - - - r - - - - - - - E
- * - - - - - - - - - - - - - - - - F
+ * - - - - r r - - r - - - - - - - E
+ * - - - - - r r - - - - - - - - - F
  *
  * Legend:
  * "-": Not implemented.
@@ -67,6 +67,21 @@ export const TEST_CASES: TestCase[] = [
   { op: "e4", data: [0x10], before: { p: 0 }, beforeRam: { 0x10: 0xff }, after: { a: 0xff, n: 1, z: 0 } },
   { op: "e4", data: [0x10], before: { p: 1 }, beforeRam: { 0x110: 0x12 }, after: { a: 0x12, n: 0, z: 0 } },
 
+  // e5: MOV 3b  4c N-----Z- A <- (abs)
+  { op: "e5", data: [0x10, 0x02], beforeRam: { 0x210: 0x12 }, after: { a: 0x12, n: 0, z: 0 } },
+  { op: "e5", data: [0x10, 0x02], beforeRam: { 0x210: 0x00 }, after: { a: 0x00, n: 0, z: 1 } },
+  { op: "e5", data: [0x10, 0x02], beforeRam: { 0x210: 0xff }, after: { a: 0xff, n: 1, z: 0 } },
+
+  // f5: MOV 3b  5c N-----Z- A <- (abs+X)
+  { op: "f5", data: [0x10, 0x02], before: { x: 0x10 }, beforeRam: { 0x220: 0x12 }, after: { a: 0x12, n: 0, z: 0 } },
+  { op: "f5", data: [0x10, 0x02], before: { x: 0x10 }, beforeRam: { 0x220: 0x00 }, after: { a: 0x00, n: 0, z: 1 } },
+  { op: "f5", data: [0x10, 0x02], before: { x: 0x10 }, beforeRam: { 0x220: 0xff }, after: { a: 0xff, n: 1, z: 0 } },
+
+  // f6: MOV 3b  5c N-----Z- A <- (abs+Y)
+  { op: "f6", data: [0x10, 0x02], before: { y: 0x10 }, beforeRam: { 0x220: 0x12 }, after: { a: 0x12, n: 0, z: 0 } },
+  { op: "f6", data: [0x10, 0x02], before: { y: 0x10 }, beforeRam: { 0x220: 0x00 }, after: { a: 0x00, n: 0, z: 1 } },
+  { op: "f6", data: [0x10, 0x02], before: { y: 0x10 }, beforeRam: { 0x220: 0xff }, after: { a: 0xff, n: 1, z: 0 } },
+
   // cd: MOV 2b  2c N-----Z- X <- imm
   { op: "cd", data: [0x12], after: { x: 0x12, n: 0, z: 0 } },
   { op: "cd", data: [0x00], after: { x: 0x00, n: 0, z: 1 } },
@@ -104,4 +119,19 @@ export const TEST_CASES: TestCase[] = [
   { op: "48", data: [0x03], before: { a: 0x06 }, after: { a: 0x05, n: 0, z: 0 } },
   { op: "48", data: [0x06], before: { a: 0x06 }, after: { a: 0x00, n: 0, z: 1 } },
   { op: "48", data: [0xff], before: { a: 0x00 }, after: { a: 0xff, n: 1, z: 0 } },
+
+  /**
+   * 8-bit Shift / Rotation Operations
+   */
+  // 4b: LSR 2b  4c N-----ZC 0 >> (dp) >> C
+  { op: "4b", data: [0x10], before: { p: 0 }, beforeRam: { 0x10: 0x12 }, after: { n: 0, z: 0, c: 0 }, afterRam: { 0x10: 0x09 } },
+  { op: "4b", data: [0x10], before: { p: 0 }, beforeRam: { 0x10: 0x01 }, after: { n: 0, z: 1, c: 1 }, afterRam: { 0x10: 0x00 } },
+  { op: "4b", data: [0x10], before: { p: 0 }, beforeRam: { 0x10: 0xff }, after: { n: 0, z: 0, c: 1 }, afterRam: { 0x10: 0x7f } },
+  { op: "4b", data: [0x10], before: { p: 1 }, beforeRam: { 0x110: 0x12 }, after: { n: 0, z: 0, c: 0 }, afterRam: { 0x110: 0x09 } },
+
+  /**
+   * Program Flow Operations
+   */
+  // 2f: BRA 2b  4c -------- Branch (always)
+  { op: "2f", data: [0x15], before: { pc: 0x200 }, after: { pc: 0x217 } },
 ];

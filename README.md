@@ -22,7 +22,7 @@ So why am I writing this from scratch?
 ### Core
 
 - [x] Loading SPC files.
-- [ ] Emulate SPC700 opcodes. (8/256 opcodes emulated)
+- [ ] Emulate SPC700 opcodes. (13/256 opcodes emulated)
 - [ ] Emulate RAM access.
 - [ ] Emulate timers.
 - [ ] Emulate DSP.

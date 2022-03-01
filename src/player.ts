@@ -79,6 +79,33 @@ export class Cpu {
         break;
       }
 
+      // MOV A <- (abs)
+      case 0xe5: {
+        const abs = (this.ram[this.pc + 1] << 8) | this.ram[this.pc];
+        this.pc += 2;
+        this.nz = this.a = this.ram[abs];
+        // TODO: READ side-effect?
+        break;
+      }
+
+      // MOV A <- (abs+X)
+      case 0xf5: {
+        const abs = (this.ram[this.pc + 1] << 8) | this.ram[this.pc];
+        this.pc += 2;
+        this.nz = this.a = this.ram[abs + this.x];
+        // TODO: READ side-effect?
+        break;
+      }
+
+      // MOV A <- (abs+Y)
+      case 0xf6: {
+        const abs = (this.ram[this.pc + 1] << 8) | this.ram[this.pc];
+        this.pc += 2;
+        this.nz = this.a = this.ram[abs + this.y];
+        // TODO: READ side-effect?
+        break;
+      }
+
       // MOV X <- imm
       case 0xcd: {
         const imm = this.ram[this.pc++];
@@ -131,6 +158,29 @@ export class Cpu {
       case 0x48: {
         const imm = this.ram[this.pc++];
         this.nz = this.a ^= imm;
+        break;
+      }
+
+      /**
+       * 8-bit Shift / Rotation Operations
+       */
+      // LSR 0 >> (dp) >> C
+      case 0x4b: {
+        const dp = this.ram[this.pc++] + this.p;
+        const value = this.ram[dp];
+        // Save carry.
+        this.#psw = (this.#psw & ~0x01) | (value & 0x01);
+        this.nz = this.ram[dp] = value >> 1;
+        break;
+      }
+
+      /**
+       * Program Flow Operations
+       */
+      // BRA Branch (always)
+      case 0x2f: {
+        const rel = this.ram[this.pc++];
+        this.pc += rel;
         break;
       }
     }
