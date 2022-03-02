@@ -179,8 +179,44 @@ export class Cpu {
        */
       // BRA Branch (always)
       case 0x2f: {
-        const rel = this.ram[this.pc++];
+        const rel = (this.ram[this.pc++] << 24) >> 24;
         this.pc += rel;
+        break;
+      }
+
+      // BNE Branch if Equal (Z=1)
+      case 0xf0: {
+        const rel = (this.ram[this.pc++] << 24) >> 24;
+        const z = this.nz & 0xff;
+        if (!z) {
+          this.pc += rel;
+        } else {
+          this.cycles -= 2;
+        }
+        break;
+      }
+
+      // BNE Branch if Not Equal (Z=0)
+      case 0xd0: {
+        const rel = (this.ram[this.pc++] << 24) >> 24;
+        const z = this.nz & 0xff;
+        if (z) {
+          this.pc += rel;
+        } else {
+          this.cycles -= 2;
+        }
+        break;
+      }
+
+      // BCS Branch if Carry Set
+      case 0xb0: {
+        const rel = (this.ram[this.pc++] << 24) >> 24;
+        const c = this.#psw & 0x01;
+        if (c) {
+          this.pc += rel;
+        } else {
+          this.cycles -= 2;
+        }
         break;
       }
     }

@@ -14,11 +14,11 @@
  * - - - - - - - - - - - - - r - w 8
  * - - - - - - - - - - - - - - - - 9
  * - - - - - - - - - - - - - - - - A
- * - - - - - - - - - - - - - - - - B
+ * X - - - - - - - - - - - - - - - B
  * - - - - w - - - - - - - X - - - C
- * - - - - - - - - - - - - - - - - D
+ * X - - - - - - - - - - - - - - - D
  * - - - - r r - - r - - - - - - - E
- * - - - - - r r - - - - - - - - - F
+ * X - - - - r r - - - - - - - - - F
  *
  * Legend:
  * "-": Not implemented.
@@ -134,4 +134,23 @@ export const TEST_CASES: TestCase[] = [
    */
   // 2f: BRA 2b  4c -------- Branch (always)
   { op: "2f", data: [0x15], before: { pc: 0x200 }, after: { pc: 0x217 } },
+  { op: "2f", data: [0xf6], before: { pc: 0x200 }, after: { pc: 0x1f8 } },
+
+  // f0: BEQ 2b 2/4c -------- Branch if Equal (Z=1)
+  // TODO: Test cycle difference.
+  { op: "f0", data: [0x15], before: { pc: 0x200, z: 1 }, after: { pc: 0x217 } },
+  { op: "f0", data: [0xf6], before: { pc: 0x200, z: 1 }, after: { pc: 0x1f8 } },
+  { op: "f0", data: [0x15], before: { pc: 0x200, z: 0 }, after: { pc: 0x202 } },
+
+  // b0: BNE 2b 2/4c -------- Branch if Not Equal (Z=0)
+  // TODO: Test cycle difference.
+  { op: "d0", data: [0x15], before: { pc: 0x200, z: 0 }, after: { pc: 0x217 } },
+  { op: "d0", data: [0xf6], before: { pc: 0x200, z: 0 }, after: { pc: 0x1f8 } },
+  { op: "d0", data: [0x15], before: { pc: 0x200, z: 1 }, after: { pc: 0x202 } },
+
+  // b0: BCS 2b 2/4c -------- Branch if Carry Set
+  // TODO: Test cycle difference.
+  { op: "b0", data: [0x15], before: { pc: 0x200, c: 1 }, after: { pc: 0x217 } },
+  { op: "b0", data: [0xf6], before: { pc: 0x200, c: 1 }, after: { pc: 0x1f8 } },
+  { op: "b0", data: [0x15], before: { pc: 0x200, c: 0 }, after: { pc: 0x202 } },
 ];
