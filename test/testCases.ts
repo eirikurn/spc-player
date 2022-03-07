@@ -4,21 +4,21 @@
  * 0 1 2 3 4 5 6 7 8 9 A B C D E F
  *
  * - - - - - - - - - - - - - - - - 0
- * - - - - - - - - - - - - - - - - 1
+ * - - - - - - - - - - - - - X - - 1
  * - - - - r - - - - - - - - - - X 2
- * - - - - - - - - - - - - - - - - 3
+ * - - - - - - - - - - - - - X - - 3
  * - - - - - - - - X - - w - - - - 4
  * - - - - - - - - - - - - - - - - 5
  * - - - - - - - - - - - - - - - - 6
  * - - - - - - - - - - - - - - - - 7
  * - - - - - - - - - - - - - r - w 8
- * - - - - - - - - - - - - - - - - 9
+ * - - - - - - - - - - - - X - - - 9
  * - - - - - - - - - - - - - - - - A
- * X - - - - - - - - - - - - - - - B
+ * X - - - - - - - - - - - X - - - B
  * - - - - w - - - - - - - X - - - C
- * X - - - - - - - - - - - - - - - D
+ * X - - - - - - - - - - - X - - - D
  * - - - - r r - - r - - - - - - - E
- * X - - - - r r - - - - - - - - - F
+ * X - - - - r r - - - - - X - - - F
  *
  * Legend:
  * "-": Not implemented.
@@ -47,7 +47,7 @@ export interface TestCase {
   before?: Partial<ExpandedRegisters>;
   beforeRam?: Record<number, number | number[]>;
   op: string;
-  data: number[];
+  data?: number[];
   after?: Partial<ExpandedRegisters>;
   afterRam?: Record<number, number | number[]>;
 }
@@ -119,6 +119,39 @@ export const TEST_CASES: TestCase[] = [
   { op: "48", data: [0x03], before: { a: 0x06 }, after: { a: 0x05, n: 0, z: 0 } },
   { op: "48", data: [0x06], before: { a: 0x06 }, after: { a: 0x00, n: 0, z: 1 } },
   { op: "48", data: [0xff], before: { a: 0x00 }, after: { a: 0xff, n: 1, z: 0 } },
+
+  /**
+   * 8-bit Increment / Decrement Operations
+   */
+  // bc: INC 1b  2c N-----Z- ++A
+  { op: "bc", before: { a: 0x06 }, after: { a: 0x07, n: 0, z: 0 } },
+  { op: "bc", before: { a: 0x7f }, after: { a: 0x80, n: 1, z: 0 } },
+  { op: "bc", before: { a: 0xff }, after: { a: 0x00, n: 0, z: 1 } },
+
+  // 3d: INC 1b  2c N-----Z- ++X
+  { op: "3d", before: { x: 0x06 }, after: { x: 0x07, n: 0, z: 0 } },
+  { op: "3d", before: { x: 0x7f }, after: { x: 0x80, n: 1, z: 0 } },
+  { op: "3d", before: { x: 0xff }, after: { x: 0x00, n: 0, z: 1 } },
+
+  // fc: INC 1b  2c N-----Z- ++Y
+  { op: "fc", before: { y: 0x06 }, after: { y: 0x07, n: 0, z: 0 } },
+  { op: "fc", before: { y: 0x7f }, after: { y: 0x80, n: 1, z: 0 } },
+  { op: "fc", before: { y: 0xff }, after: { y: 0x00, n: 0, z: 1 } },
+
+  // 9c: INC 1b  2c N-----Z- --A
+  { op: "9c", before: { a: 0x06 }, after: { a: 0x05, n: 0, z: 0 } },
+  { op: "9c", before: { a: 0x00 }, after: { a: 0xff, n: 1, z: 0 } },
+  { op: "9c", before: { a: 0x01 }, after: { a: 0x00, n: 0, z: 1 } },
+
+  // 1d: INC 1b  2c N-----Z- --X
+  { op: "1d", before: { x: 0x06 }, after: { x: 0x05, n: 0, z: 0 } },
+  { op: "1d", before: { x: 0x00 }, after: { x: 0xff, n: 1, z: 0 } },
+  { op: "1d", before: { x: 0x01 }, after: { x: 0x00, n: 0, z: 1 } },
+
+  // dc: INC 1b  2c N-----Z- --Y
+  { op: "dc", before: { y: 0x06 }, after: { y: 0x05, n: 0, z: 0 } },
+  { op: "dc", before: { y: 0x00 }, after: { y: 0xff, n: 1, z: 0 } },
+  { op: "dc", before: { y: 0x01 }, after: { y: 0x00, n: 0, z: 1 } },
 
   /**
    * 8-bit Shift / Rotation Operations

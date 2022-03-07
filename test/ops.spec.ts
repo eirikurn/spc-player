@@ -51,8 +51,9 @@ const createState = (testCase: TestCase): CpuState => {
 
   // Write test op to ram.
   ram[0x200] = parseInt(testCase.op, 16);
-  for (let i = 0; i < testCase.data.length; i++) {
-    ram[0x201 + i] = testCase.data[i];
+  const data = testCase.data ?? [];
+  for (let i = 0; i < data.length; i++) {
+    ram[0x201 + i] = data[i];
   }
 
   // Write requested ram changes

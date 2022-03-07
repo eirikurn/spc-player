@@ -162,6 +162,51 @@ export class Cpu {
       }
 
       /**
+       * 8-bit Increment / Decrement Operations
+       */
+      // INC ++A
+      case 0xbc: {
+        this.a = (this.a + 1) & 0xff;
+        this.nz = this.a;
+        break;
+      }
+
+      // INC ++X
+      case 0x3d: {
+        this.x = (this.x + 1) & 0xff;
+        this.nz = this.x;
+        break;
+      }
+
+      // INC ++Y
+      case 0xfc: {
+        this.y = (this.y + 1) & 0xff;
+        this.nz = this.y;
+        break;
+      }
+
+      // INC --A
+      case 0x9c: {
+        this.a = (this.a - 1) & 0xff;
+        this.nz = this.a;
+        break;
+      }
+
+      // INC --X
+      case 0x1d: {
+        this.x = (this.x - 1) & 0xff;
+        this.nz = this.x;
+        break;
+      }
+
+      // INC --Y
+      case 0xdc: {
+        this.y = (this.y - 1) & 0xff;
+        this.nz = this.y;
+        break;
+      }
+
+      /**
        * 8-bit Shift / Rotation Operations
        */
       // LSR 0 >> (dp) >> C
